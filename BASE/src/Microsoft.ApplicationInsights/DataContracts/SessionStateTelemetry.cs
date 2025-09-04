@@ -8,7 +8,7 @@
     /// Telemetry type used to track user sessions.
     /// </summary>
     [Obsolete("Session state events are no longer used. This telemetry item will be sent as EventTelemetry.")]
-    public sealed class SessionStateTelemetry : ITelemetry, IAiSerializableTelemetry
+    internal sealed class SessionStateTelemetry : ITelemetry, IAiSerializableTelemetry
     {
         internal readonly EventTelemetry Data;
 
@@ -155,12 +155,6 @@
         void ITelemetry.Sanitize()
         {
             ((ITelemetry)this.Data).Sanitize();
-        }
-
-        /// <inheritdoc/>
-        public void SerializeData(ISerializationWriter serializationWriter)
-        {
-            this.Data.SerializeData(serializationWriter);
         }
     }
 }

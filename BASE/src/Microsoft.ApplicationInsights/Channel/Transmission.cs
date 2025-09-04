@@ -18,7 +18,7 @@
     /// <summary>
     /// Implements an asynchronous transmission of data to an HTTP POST endpoint.
     /// </summary>
-    public class Transmission
+    internal class Transmission
     {
         internal const string ContentEncodingHeader = "Content-Encoding";
 

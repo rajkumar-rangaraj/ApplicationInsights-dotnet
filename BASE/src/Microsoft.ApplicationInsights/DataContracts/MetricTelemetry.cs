@@ -170,7 +170,7 @@
         /// <summary>
         /// Gets or sets gets the extension used to extend this telemetry instance using new strong typed object.
         /// </summary>
-        public IExtension Extension
+        internal IExtension Extension
         {
             get { return this.extension; }
             set { this.extension = value; }
@@ -268,7 +268,7 @@
         }
 
         /// <inheritdoc/>
-        public void SerializeData(ISerializationWriter serializationWriter)
+        internal void SerializeData(ISerializationWriter serializationWriter)
         {
             if (serializationWriter == null)
             {

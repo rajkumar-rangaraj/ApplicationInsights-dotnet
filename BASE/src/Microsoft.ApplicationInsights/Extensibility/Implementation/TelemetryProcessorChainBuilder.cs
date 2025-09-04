@@ -32,7 +32,7 @@
         /// </summary>
         /// <param name="configuration">Configuration instance to use for constructing the processor chain.</param>
         /// <param name="telemetrySink">Telemetry sink the processor chain will be assigned to.</param>
-        public TelemetryProcessorChainBuilder(TelemetryConfiguration configuration, TelemetrySink telemetrySink) : this(configuration)
+        internal TelemetryProcessorChainBuilder(TelemetryConfiguration configuration, TelemetrySink telemetrySink) : this(configuration)
         {
             this.telemetrySink = telemetrySink ?? throw new ArgumentNullException(nameof(telemetrySink));
         }
@@ -45,7 +45,7 @@
         /// </summary>
         /// <param name="telemetryProcessorFactory">A delegate that returns a <see cref="ITelemetryProcessor"/>
         /// , given the next <see cref="ITelemetryProcessor"/> in the call chain.</param>
-        public TelemetryProcessorChainBuilder Use(Func<ITelemetryProcessor, ITelemetryProcessor> telemetryProcessorFactory)
+        internal TelemetryProcessorChainBuilder Use(Func<ITelemetryProcessor, ITelemetryProcessor> telemetryProcessorFactory)
         {
             this.factories.Add(telemetryProcessorFactory);
             return this;

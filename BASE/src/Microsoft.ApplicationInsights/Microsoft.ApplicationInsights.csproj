@@ -6,6 +6,7 @@
     <AssemblyName>Microsoft.ApplicationInsights</AssemblyName>
     <TargetFrameworks>net452;net46;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="$(OS) != 'Windows_NT'">netstandard2.0</TargetFrameworks>
+	<NoWarn>$(NoWarn);SA1623;SA1202;SA1400;SA1623;SA1648;</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,6 +29,10 @@
 
   <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
     <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Remove="C:\repo\ApplicationInsights-dotnet\.publicApi\Microsoft.ApplicationInsights.dll\net452\PublicAPI.Shipped.txt" />
   </ItemGroup>
 
   <ItemGroup>

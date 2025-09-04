@@ -18,7 +18,7 @@
     /// <remarks>
     /// Additional exception details will need to be tracked manually.
     /// </remarks>
-    public sealed class ExceptionTelemetry : ITelemetry, ISupportProperties, ISupportAdvancedSampling, ISupportMetrics, IAiSerializableTelemetry
+    public sealed class ExceptionTelemetry : ITelemetry, ISupportProperties, ISupportMetrics, IAiSerializableTelemetry
     {
         internal const string EtwEnvelopeName = "Exception";
         internal string EnvelopeName = "AppExceptions";
@@ -91,7 +91,7 @@
             this.Sequence = source.Sequence;
             this.Timestamp = source.Timestamp;
             this.samplingPercentage = source.samplingPercentage;
-            this.ProactiveSamplingDecision = source.ProactiveSamplingDecision;
+            // this.ProactiveSamplingDecision = source.ProactiveSamplingDecision;
 
             if (!this.isCreatedFromExceptionInfo)
             {
@@ -139,7 +139,7 @@
         /// <summary>
         /// Gets or sets gets the extension used to extend this telemetry instance using new strong typed object.
         /// </summary>
-        public IExtension Extension
+        internal IExtension Extension
         {
             get { return this.extension; }
             set { this.extension = value; }
@@ -288,24 +288,6 @@
             set => this.Data.SeverityLevel = value;
         }
 
-        /// <summary>
-        /// Gets or sets data sampling percentage (between 0 and 100).
-        /// Should be 100/n where n is an integer. <a href="https://go.microsoft.com/fwlink/?linkid=832969">Learn more</a>
-        /// </summary>
-        double? ISupportSampling.SamplingPercentage
-        {
-            get { return this.samplingPercentage; }
-            set { this.samplingPercentage = value; }
-        }
-
-        /// <summary>
-        /// Gets item type for sampling evaluation.
-        /// </summary>
-        public SamplingTelemetryItemTypes ItemTypeFlag => SamplingTelemetryItemTypes.Exception;
-
-        /// <inheritdoc/>
-        public SamplingDecision ProactiveSamplingDecision { get; set; }
-
         internal IList<ExceptionDetails> Exceptions
         {
             get { return this.Data.Data.exceptions; }
@@ -330,7 +312,7 @@
         }
 
         /// <inheritdoc/>
-        public void SerializeData(ISerializationWriter serializationWriter)
+        internal void SerializeData(ISerializationWriter serializationWriter)
         {
             if (serializationWriter == null)
             {

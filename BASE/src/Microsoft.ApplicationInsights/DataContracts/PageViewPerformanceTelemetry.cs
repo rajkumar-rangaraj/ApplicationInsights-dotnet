@@ -11,7 +11,7 @@
     /// <summary>
     /// Telemetry type used to track page load performance.
     /// </summary>
-    public sealed class PageViewPerformanceTelemetry : ITelemetry, ISupportProperties, ISupportAdvancedSampling, IAiSerializableTelemetry
+    internal sealed class PageViewPerformanceTelemetry : ITelemetry, ISupportProperties, ISupportAdvancedSampling, IAiSerializableTelemetry
     {
         internal const string EtwEnvelopeName = "PageViewPerformance";
         internal readonly PageViewPerfData Data;
@@ -248,17 +248,6 @@
             this.Metrics.SanitizeMeasurements();
             this.Url = this.Url.SanitizeUri();
             this.Id.SanitizeName();
-        }
-
-        /// <inheritdoc/>
-        public void SerializeData(ISerializationWriter serializationWriter)
-        {
-            if (serializationWriter == null)
-            {
-                throw new ArgumentNullException(nameof(serializationWriter));
-            }
-
-            serializationWriter.WriteProperty(this.Data);
         }
     }
 }

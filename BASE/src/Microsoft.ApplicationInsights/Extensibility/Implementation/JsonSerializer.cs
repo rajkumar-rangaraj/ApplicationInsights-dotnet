@@ -17,7 +17,7 @@
     /// is API support for it. 
     /// </summary>    
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class JsonSerializer
+    internal static class JsonSerializer
     {
         private static readonly UTF8Encoding TransmissionEncoding = new UTF8Encoding(false);
 
@@ -184,7 +184,7 @@
             jsonSerializationWriter.WriteStartObject("data");
             jsonSerializationWriter.WriteProperty("baseType", baseType);
             jsonSerializationWriter.WriteStartObject("baseData");
-            telemetryItem.SerializeData(jsonSerializationWriter);
+            // telemetryItem.SerializeData(jsonSerializationWriter);
             jsonSerializationWriter.WriteEndObject(); // baseData
             jsonSerializationWriter.WriteEndObject(); // data
         }
@@ -192,9 +192,10 @@
         private static void SerializeUnknownTelemetryHelper(ITelemetry telemetryItem, JsonSerializationWriter jsonSerializationWriter)
         {
             DictionarySerializationWriter dictionarySerializationWriter = new DictionarySerializationWriter();
-            telemetryItem.SerializeData(dictionarySerializationWriter); // Properties and Measurements are covered as part of Data if present
+            // telemetryItem.SerializeData(dictionarySerializationWriter); // Properties and Measurements are covered as part of Data if present
             telemetryItem.CopyGlobalPropertiesIfExist(dictionarySerializationWriter.AccumulatedDictionary);
 
+            /*
             if (telemetryItem.Extension != null)
             {
                 DictionarySerializationWriter extensionSerializationWriter = new DictionarySerializationWriter();
@@ -202,7 +203,7 @@
 
                 Utils.CopyDictionary(extensionSerializationWriter.AccumulatedDictionary, dictionarySerializationWriter.AccumulatedDictionary);
                 Utils.CopyDictionary(extensionSerializationWriter.AccumulatedMeasurements, dictionarySerializationWriter.AccumulatedMeasurements);
-            }
+            }*/
 
             jsonSerializationWriter.WriteProperty("name", EventTelemetry.DefaultEnvelopeName);
             telemetryItem.WriteEnvelopeProperties(jsonSerializationWriter); // No need to copy Context - it's serialized here from the original item
