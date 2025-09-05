@@ -4,7 +4,7 @@
   <PropertyGroup>
     <RootNamespace>Microsoft.ApplicationInsights</RootNamespace>
     <AssemblyName>Microsoft.ApplicationInsights</AssemblyName>
-    <TargetFrameworks>net452;net46;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="$(OS) != 'Windows_NT'">netstandard2.0</TargetFrameworks>
 	<NoWarn>$(NoWarn);SA1623;SA1202;SA1400;SA1623;SA1648;</NoWarn>
   </PropertyGroup>
@@ -21,10 +21,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.4.0" />
     <PackageReference Include="Microsoft.Diagnostics.Tracing.EventRegister" Version="1.1.28" Condition="$(OS) == 'Windows_NT'">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsDiagnosticSourcePkgVer)" />
+    <!--<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsDiagnosticSourcePkgVer)" />-->
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
@@ -32,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Remove="C:\repo\ApplicationInsights-dotnet\.publicApi\Microsoft.ApplicationInsights.dll\net452\PublicAPI.Shipped.txt" />
+    <AdditionalFiles Remove="C:\repo\ApplicationInsights-dotnet\.publicApi\Microsoft.ApplicationInsights.dll\net462\PublicAPI.Shipped.txt" />
   </ItemGroup>
 
   <ItemGroup>

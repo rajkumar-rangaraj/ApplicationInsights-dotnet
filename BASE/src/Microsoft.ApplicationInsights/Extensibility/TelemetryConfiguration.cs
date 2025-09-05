@@ -7,7 +7,7 @@
     using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Azure.Monitor.OpenTelemetry.Exporter;
     using Microsoft.ApplicationInsights.Channel;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility.Implementation;
@@ -16,9 +16,10 @@
     using Microsoft.ApplicationInsights.Extensibility.Implementation.Endpoints;
     using Microsoft.ApplicationInsights.Extensibility.Implementation.Sampling;
     using Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing;
-    using Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing.SelfDiagnostics;
     using Microsoft.ApplicationInsights.Metrics;
     using Microsoft.ApplicationInsights.Metrics.Extensibility;
+    using OpenTelemetry;
+    using OpenTelemetry.Trace;
 
     /// <summary>
     /// Encapsulates the global telemetry configuration typically loaded from the ApplicationInsights.config file.
@@ -29,6 +30,11 @@
     /// </remarks>
     public sealed class TelemetryConfiguration : IDisposable
     {
+        private readonly object initLock = new object();
+        private TracerProvider tracerProvider;
+        private ActivitySource activitySource;
+        private bool isInitialized = false;
+
         internal readonly SamplingRateStore LastKnownSampleRateStore = new SamplingRateStore();
 
         private static object syncRoot = new object();
@@ -59,6 +65,7 @@
         /// </summary>
         static TelemetryConfiguration()
         {
+            /*
             ActivityExtensions.TryRun(() =>
             {
                 if (!Activity.ForceDefaultIdFormat)
@@ -68,15 +75,14 @@
                 }
             });
             SelfDiagnosticsInitializer.EnsureInitialized();
+            */
         }
 
         /// <summary>
         /// Initializes a new instance of the TelemetryConfiguration class.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-#pragma warning disable CS0618 // Type or member is obsolete
         public TelemetryConfiguration()
-#pragma warning restore CS0618 // Type or member is obsolete
         {
         }
 
@@ -160,6 +166,24 @@
                 }
 
                 this.disableTelemetry = value;
+            }
+        }
+
+        internal TracerProvider TracerProvider
+        {
+            get
+            {
+                this.EnsureInitialized();
+                return this.tracerProvider;
+            }
+        }
+
+        internal ActivitySource ActivitySource
+        {
+            get
+            {
+                this.EnsureInitialized();
+                return this.activitySource;
             }
         }
 
@@ -350,6 +374,35 @@
             }
         }
 
+        private void EnsureInitialized()
+        {
+            if (this.isInitialized)
+            {
+                return;
+            }
+
+            lock (this.initLock)
+            {
+                if (this.isInitialized)
+                {
+                    return;
+                }
+
+                this.InitializeOpenTelemetry();
+                this.isInitialized = true;
+            }
+        }
+
+        private void InitializeOpenTelemetry()
+        {
+            // Create ActivitySource and Meter for this configuration
+            this.activitySource = new ActivitySource("Microsoft.ApplicationInsights", "3.0.0");
+            this.tracerProvider = Sdk.CreateTracerProviderBuilder()
+                                 .AddSource(this.activitySource.Name)
+                                 .AddAzureMonitorTraceExporter(o => o.ConnectionString = this.connectionString)
+                                 .Build();
+        }
+
         /// <summary>
         /// Creates a new <see cref="TelemetryConfiguration"/> instance loaded from the ApplicationInsights.config file.
         /// If the configuration file does not exist, the new configuration instance is initialized with minimum defaults 
@@ -517,6 +570,9 @@
             if (!this.isDisposed && disposing)
             {
                 this.isDisposed = true;
+                this.tracerProvider?.Dispose();
+                this.activitySource?.Dispose();
+
                 Interlocked.CompareExchange(ref active, null, this);
 
                 // I think we should be flushing this.telemetrySinks.DefaultSink.TelemetryChannel at this point.
